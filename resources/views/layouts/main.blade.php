@@ -40,6 +40,7 @@
             @endif
 
             <a class="nav-item nav-link" href="{{ route('menu') }}">Menu</a>
+            <a class="nav-item nav-link" href="{{ route('order') }}">Orders</a>
         </div>
     </div>
     <div class="nav navbar-nav navbar-right">

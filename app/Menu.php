@@ -10,7 +10,21 @@ class Menu extends Model
         'name', 'price', 'portion', 'category_id',
     ];
 
+    /**
+     * Relate Category model
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function category() {
-        return $this->hasMany('App\Category');
+        return $this->belongsTo('App\Category');
+    }
+
+    /**
+     * Relate Order model
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function orderMenu() {
+        return $this->hasMany('App\OrderMenu');
     }
 }

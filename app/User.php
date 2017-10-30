@@ -26,4 +26,22 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    /**
+     * relate Order model
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function order() {
+        return $this->hasMany('App\Order');
+    }
+
+    /**
+     * Relate Group model
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function group() {
+        return $this->belongsTo('App\Group');
+    }
 }

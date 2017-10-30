@@ -11,13 +11,10 @@ class MenuController extends Controller
 {
     function index() {
 
+        $categories = Category::all();
+        $menus = Menu::all();
 
-        $categoryList = Category::all();
-        $menuList = Menu::all();
-
-        dd($menuList);
-
-        return view('menu');
+        return view('menu')->with(['categories' => $categories, 'menus' => $menus]);
 
     }
 }

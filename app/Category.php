@@ -10,7 +10,12 @@ class Category extends Model
         'name',
     ];
 
+    /**
+     * Relate Menu model
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function menu() {
-        return $this->belongsTo('App\Menu');
+        return $this->hasMany('App\Menu');
     }
 }

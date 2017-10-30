@@ -12,3 +12,5 @@ Route::prefix('admin')->group(function () {
     Route::get('category', 'AdminController@category')->name('admin.category');
     Route::get('order', 'AdminController@order')->name('admin.order');
 });
+
+Route::get('/order', 'OrderController@index')->name('order')->middleware('auth');
