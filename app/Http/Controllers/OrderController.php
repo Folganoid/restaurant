@@ -21,8 +21,6 @@ class OrderController extends Controller
         $id = Auth::id();
         $orders = User::find($id)->order; // orders for current user
 
-
-
         $ordersArr = $this->buildOrders($id, $orders);
 
         $group = Group::where('user_id', $id)->get();
@@ -76,9 +74,11 @@ class OrderController extends Controller
             $orderId = $orders[$i]->id;
             $temp_group = Group::where('order_id', $orderId)->get();
 
-            for ($s = 0; $s < count($temp_group); $s++) {
-                $groups[$orderId][] = User::where('id', $temp_group[$s]->user_id)->first();
-            }
+            $tmpArr = [];
+                for ($s = 0; $s < count($temp_group); $s++) {
+                    $tmpArr[] =  $temp_group[$s]->user_id;
+                }
+            $groups[$orderId] = User::find($tmpArr);
 
             $menus[$orderId] = Order::find($orderId)->orderMenu;
 
@@ -88,7 +88,7 @@ class OrderController extends Controller
             }
         }
 
- //dd($groups);
+ // dd($menuDesc);
 
 
     return ['menus' => $menus, 'menuDesc' => $menuDesc, 'groups' => $groups];

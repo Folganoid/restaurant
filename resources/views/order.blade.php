@@ -1,6 +1,7 @@
 @extends('layouts.main')
 
 @section('content')
+
     <h1>Orders</h1>
     <br>
     @foreach($orders as $order)
