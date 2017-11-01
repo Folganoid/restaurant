@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class OrderMenu extends Model
 {
+
+    protected $fillable = [
+        'menu_id', 'order_id'
+    ];
     /**
      * Relate Menu model
      *

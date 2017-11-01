@@ -17,7 +17,8 @@ class MenuController extends Controller
     protected $orders;
 
 
-    public function index() {
+    public function index()
+    {
 
         $categories = Category::all();
         $menus = Menu::all();
@@ -34,7 +35,8 @@ class MenuController extends Controller
     /**
      * get orders from db
      */
-    public function getOrders() {
+    public function getOrders()
+    {
         $groups = Group::where('user_id', Auth::id())->get();
 
         $tmpGroupArr = [];
@@ -49,16 +51,57 @@ class MenuController extends Controller
     }
 
     /**
-     * api
+     * read menu list
      *
      * @param Request $request
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function menuApi(Request $request, $id) {
+    public function menuRead($id)
+    {
 
-        $data = OrderMenu::where('order_id', $id)->join('menus', 'menus.id', '=', 'order_menus.menu_id')->get();
+        $data = OrderMenu::where('order_id', $id)->join('menus', 'menus.id', '=', 'order_menus.menu_id')->
+        select(
+            'order_menus.id',
+            'order_menus.menu_id',
+            'menus.name',
+            'order_menus.order_id',
+            'menus.price',
+            'menus.portion'
+        )->get();
         return response()->json(json_encode($data->toArray()));
 
     }
+
+    /**
+     * add menu in order
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function menuCreate(Request $request)
+    {
+        $data = $request->all();
+
+        $menu = new OrderMenu;
+            $menu->order_id = $data['order'];
+            $menu->menu_id = $data['menu'];
+        $menu->save();
+
+        return response()->json('{"status": "ok"}');
+    }
+
+    /**
+     * delete menu from order
+     *
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function menuDelete($id)
+    {
+
+        OrderMenu::destroy($id);
+        return response()->json('{"status": "ok"}');
+    }
+
 }

@@ -29,10 +29,10 @@
             <br>
             <select id="changeOrder">
                 @for( $i = 0 ; $i < count($orders) ; $i++)
-                    <option value="{{ $orders[$i]->id }}">{{ $orders[$i]->created_at }}</option>
+                    <option class="changeMenuItem" value="{{ $orders[$i]->id }}">{{ $orders[$i]->created_at }}</option>
                 @endfor
                 @for( $i = 0 ; $i < count($groupOrders) ; $i++)
-                    <option value="{{ $groupOrders[$i]->id }}">{{ $groupOrders[$i]->created_at }}; owner - {{ $groupOrders[$i]->user_id }}</option>
+                    <option class="changeMenuItem" value="{{ $groupOrders[$i]->id }}">{{ $groupOrders[$i]->created_at }}; owner - {{ $groupOrders[$i]->user_id }}</option>
                 @endfor
             </select>
             <br>

@@ -2,65 +2,49 @@
 
 @section('content')
 
-    <h1>Orders</h1>
+
+<div class="row">
+    <div class="col-lg-6">
+    <h1>My Orders</h1>
     <br>
-    @foreach($orders as $order)
 
-        <b>{{ $order->updated_at }}</b> - <i>{{ $order->send }}</i>
-
-        <h3>WITH</h3>
-
-        @if(isset($groups[$order->id]))
-            @for( $s = 0; $s < count($groups[$order->id]) ; $s++)
-                <dd>{{ $groups[$order->id][$s]['name'] }}</dd>
+    @foreach($orders as $k => $order)
+        <dd>{{ $order[0]->created_at }} / {{ $order[0]->updated_at }} --- {{ ($order[0]->send == 0) ? 'Not sended' : 'Sended'}}</dd>
+        <dd>
+            WITH:
+            @for( $i = 0 ; $i < count($groups[$k]) ; $i++)
+                {{ $groups[$k][$i]->login . ' ' }}
             @endfor
-        @endif
-
-
-        <ul>
-            @for( $k = 0; $k < count($menus[$order->id]) ; $k++)
-
-                <li>
-                    {{ $menuDesc[$menus[$order->id][$k]['menu_id']]['name'] .
-                     ' --- ' .
-                      $menuDesc[$menus[$order->id][$k]['menu_id']]['price']}}
-                </li>
-
-            @endfor
-        </ul>
+        </dd>
+    <ul>
+        @for( $i = 0 ; $i < count($order) ; $i++)
+            <li>{{ $order[$i]->name }}</li>
+        @endfor
+    </ul>
     @endforeach
+    </div>
 
-    <br>
+    <div class="col-lg-6">
+        <h1>Foreign orders</h1>
+        <br>
 
-    <h1>Group orders</h1>
-    <br>
-    @foreach($groupOrders as $groupOrder)
+        @foreach($foreignOrders as $k => $order)
+            <dd>{{ $order[0]->created_at }} / {{ $order[0]->updated_at }} --- {{ ($order[0]->send == 0) ? 'Not sended' : 'Sended'}}</dd>
 
-        <b>{{ $groupOrder->updated_at }}</b> - <i>{{ $groupOrder->send }}</i>; owner - <b>{{ $groupOwners[$groupOrder->user_id]['name'] }}</b>
-
-        <h3>WITH</h3>
-
-        @if(isset($groupGroups[$groupOrder->id]))
-            @for( $s = 0; $s < count($groupGroups[$groupOrder->id]) ; $s++)
-                <dd>{{ $groupGroups[$groupOrder->id][$s]['name'] }}</dd>
-            @endfor
-        @endif
-
-
-        <ul>
-            @for( $k = 0; $k < count($groupMenus[$groupOrder->id]) ; $k++)
-
-                <li>
-                    {{ $groupMenuDesc[$groupMenus[$groupOrder->id][$k]['menu_id']]['name'] .
-                     ' --- ' .
-                      $groupMenuDesc[$groupMenus[$groupOrder->id][$k]['menu_id']]['price']}}
-                </li>
-
-            @endfor
-        </ul>
-    @endforeach
-
-
-
+            <dd>Owner - {{ $order[0]->login }}</dd>
+            <dd>
+                WITH:
+                @for( $i = 0 ; $i < count($foreignGroups[$k]) ; $i++)
+                    {{ $foreignGroups[$k][$i]->login . ' ' }}
+                @endfor
+            </dd>
+            <ul>
+                @for( $i = 0 ; $i < count($order) ; $i++)
+                    <li>{{ $order[$i]->name }}</li>
+                @endfor
+            </ul>
+        @endforeach
+    </div>
+</div>
 
 @endsection

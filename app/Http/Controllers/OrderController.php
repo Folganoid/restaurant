@@ -15,83 +15,75 @@ class OrderController extends Controller
     /**
      * Index
      */
-    function index()
+    public function index()
     {
 
         $id = Auth::id();
-        $orders = User::find($id)->order; // orders for current user
-
-        $ordersArr = $this->buildOrders($id, $orders);
-
-        $group = Group::where('user_id', $id)->get();
-        $groupList = [];
+        $orders = $this->buildOrder([$id]);
 
 
-        for( $i = 0 ; $i < count($group) ; $i++) {
-            $groupList[] = $group[$i]->order_id;
+        $groupId = Group::where('user_id', $id)->select('order_id')->get()->toArray();
+
+        $groupTmpArr = [];
+        for ( $i = 0 ; $i < count($groupId) ; $i++) {
+            $groupTmpArr[] = $groupId[$i]['order_id'];
         }
 
-        $groupOrders = Order::find($groupList);
-        $groupOwners = [];
-
-        for( $i = 0 ; $i < count($groupOrders) ; $i++) {
-            $groupOwners[$groupOrders[$i]->user_id] = User::where('id', $groupOrders[$i]->user_id)->first();
-        }
-
-        $groupArr = $this->buildOrders($id, $groupOrders);
-
+        $foreignOrders = $this->buildOrder($groupTmpArr);
 
         return view('order')->with([
-            'orders' => $orders,
-            'menus' => $ordersArr['menus'],
-            'menuDesc' => $ordersArr['menuDesc'],
-            'groups' => $ordersArr['groups'],
-            'groupOrders' => $groupOrders,
-            'groupMenus' => $groupArr['menus'],
-            'groupMenuDesc' => $groupArr['menuDesc'],
-            'groupGroups' => $groupArr['groups'],
-            'groupOwners' => $groupOwners,
+            'orders' => $orders['orders'],
+            'groups' => $orders['groups'],
+            'foreignOrders' => $foreignOrders['orders'],
+            'foreignGroups' => $foreignOrders['groups'],
         ]);
 
     }
 
-    /**
-     * Build order list
-     *
-     * @param $id
-     * @param $orders
-     * @return array
-     */
-    public function buildOrders($id, $orders): array
+    public function buildOrder(array $id)
     {
 
-        $menus = [];        // array current menus
-        $menuDesc = [];     // array menu description
-        $groups = [];       // array group users with
+        $orders = Order::whereIn('user_id', $id)
+            ->join('order_menus', 'orders.id', '=', 'order_menus.order_id')
+            ->join('menus', 'menus.id', '=', 'order_menus.menu_id')
+            ->join('users', 'users.id', '=', 'orders.user_id')
+            ->select(
+                'orders.id',
+                'orders.send',
+                'orders.user_id',
+                'users.login',
+                'order_menus.order_id',
+                'order_menus.menu_id',
+                'menus.name',
+                'menus.portion',
+                'menus.price',
+                'menus.category_id',
+                'orders.created_at',
+                'orders.updated_at'
+            )
+            ->get();
 
-        for ($i = 0; $i < count($orders); $i++) {
+        $ordersArr = [];
+        $orderIds = [];
 
-            $orderId = $orders[$i]->id;
-            $temp_group = Group::where('order_id', $orderId)->get();
-
-            $tmpArr = [];
-                for ($s = 0; $s < count($temp_group); $s++) {
-                    $tmpArr[] =  $temp_group[$s]->user_id;
-                }
-            $groups[$orderId] = User::find($tmpArr);
-
-            $menus[$orderId] = Order::find($orderId)->orderMenu;
-
-            for ($z = 0; $z < count($menus[$orderId]); $z++) {
-                $menuId = $menus[$orderId][$z]->menu_id;
-                $menuDesc[$menuId] = Menu::where('id', $menuId)->first();
-            }
+        for ($i = 0 ; $i < count($orders) ; $i++ )
+        {
+            $ordersArr[$orders[$i]->order_id][] = $orders[$i];
+            if (!in_array($orders[$i]->order_id, $orderIds)) $orderIds[] = $orders[$i]->order_id;
         }
 
- // dd($menuDesc);
+        $groupUsers = Group::whereIn('order_id', $orderIds)
+            ->join('users', 'users.id', '=', 'groups.user_id')
+            ->get();
 
+        $groupsArr = [];
 
-    return ['menus' => $menus, 'menuDesc' => $menuDesc, 'groups' => $groups];
+        for ($i = 0 ; $i < count($groupUsers) ; $i++ )
+        {
+            $groupsArr[$groupUsers[$i]->order_id][] = $groupUsers[$i];
+        }
+
+        return ['orders' => $ordersArr, 'groups' => $groupsArr];
 
     }
 }

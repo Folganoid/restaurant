@@ -6,8 +6,12 @@ Auth::routes();
 Route::get('/', 'HomeController@index')->name('home');
 
 Route::get('/menu', 'MenuController@index')->name('menu')->middleware('auth');
-Route::post('/menuapi/{id}', 'MenuController@menuApi');
 
+Route::prefix('/menu_crud')->group(function () {
+    Route::post('/read/{id}', 'MenuController@menuRead');
+    Route::post('/create', 'MenuController@menuCreate');
+    Route::post('/delete/{id}', 'MenuController@menuDelete');
+});
 
 Route::prefix('admin')->group(function () {
     Route::get('menu', 'AdminController@menu')->name('admin.menu');
