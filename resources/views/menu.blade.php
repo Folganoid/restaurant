@@ -27,19 +27,44 @@
         <div class="col">
             <h2>Active orders</h2>
             <br>
-            <select id="changeOrder">
-                @for( $i = 0 ; $i < count($orders) ; $i++)
-                    <option class="changeMenuItem" value="{{ $orders[$i]->id }}">{{ $orders[$i]->created_at }}</option>
-                @endfor
-                @for( $i = 0 ; $i < count($groupOrders) ; $i++)
-                    <option class="changeMenuItem" value="{{ $groupOrders[$i]->id }}">{{ $groupOrders[$i]->created_at }}; owner - {{ $groupOrders[$i]->user_id }}</option>
-                @endfor
-            </select>
-            <br>
-            <div>
-                <ul id="curMenu"></ul>
-            </div>
+            @if(!$orders->isEmpty() || !$groupOrders->isEmpty())
+                <select id="changeOrder">
+                    @for( $i = 0 ; $i < count($orders) ; $i++)
+                        <option class="changeMenuItem"
+                                value="{{ $orders[$i]->id }}">{{ $orders[$i]->created_at }}
+                        </option>
+                    @endfor
 
+                    @for( $i = 0 ; $i < count($groupOrders) ; $i++)
+                        <option class="changeMenuItem for"
+                                value="{{ $groupOrders[$i]->id }}">{{ $groupOrders[$i]->
+                                created_at }}; owner - {{ $groupOrders[$i]->login }}
+                        </option>
+                    @endfor
+                </select>
+
+                <b> Add User</b>
+                <select id="users">
+                    @for( $i = 0 ; $i < count($users) ; $i++)
+                        <option
+                                class="chooseUser"
+                                value="{{ $users[$i]->id }}">{{ $users[$i]->login }}
+                        </option>
+                    @endfor
+                </select>
+
+                <p>With: <span id="orderGroup"></span></p>
+                <div>
+                    <ul id="curMenu"></ul>
+                </div>
+
+                <br>
+                {!! Form::open(['route' => 'send', 'method' => 'post']) !!}
+                <input id="menuFormId" name="orderId" type="hidden" value=""/>
+                <button class="menuFormSubmit" style="display: none;" type="submit"> Send the order</button>
+                {!! Form::close() !!}
+
+            @endif
         </div>
     </div>
 

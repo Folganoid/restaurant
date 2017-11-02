@@ -11,6 +11,9 @@ Route::prefix('/menu_crud')->group(function () {
     Route::post('/read/{id}', 'MenuController@menuRead');
     Route::post('/create', 'MenuController@menuCreate');
     Route::post('/delete/{id}', 'MenuController@menuDelete');
+    Route::post('/send', 'MenuController@menuSend')->name('send');
+    Route::post('/useradd', 'MenuController@menuUserAdd');
+    Route::post('/userdel', 'MenuController@menuUserDel');
 });
 
 Route::prefix('admin')->group(function () {
