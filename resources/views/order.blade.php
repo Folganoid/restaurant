@@ -12,9 +12,11 @@
         <dd>{{ $order[0]->created_at }} / {{ $order[0]->updated_at }} --- {{ ($order[0]->send == 0) ? 'Not sended' : 'Sended'}}</dd>
         <dd>
             WITH:
+            @if(isset($groups[$k]))
             @for( $i = 0 ; $i < count($groups[$k]) ; $i++)
                 {{ $groups[$k][$i]->login . ' ' }}
             @endfor
+            @endif
         </dd>
     <ul>
         @for( $i = 0 ; $i < count($order) ; $i++)
@@ -34,9 +36,11 @@
             <dd>Owner - {{ $order[0]->login }}</dd>
             <dd>
                 WITH:
+                @if(isset($foreignGroups[$k]))
                 @for( $i = 0 ; $i < count($foreignGroups[$k]) ; $i++)
                     {{ $foreignGroups[$k][$i]->login . ' ' }}
                 @endfor
+                @endif
             </dd>
             <ul>
                 @for( $i = 0 ; $i < count($order) ; $i++)

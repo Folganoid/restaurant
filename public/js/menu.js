@@ -10,9 +10,20 @@ $(document).ready(function () {
 
     $('.chooseUser').click(function () {
        var user = $(this).val();
+        $.ajax({
+            type: "POST",
+            url: "/menu_crud/useradd",
+            cache: false,
+            data: {"user": user, "order": cnt},
+            dataType: 'json',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (html) {
 
-
-
+                redraw(cnt);
+            }
+        });
     });
 
     $('.order_menu').click(function () {
@@ -45,11 +56,9 @@ $(document).ready(function () {
     }
     catch (e) {}
 
-/*
     setInterval(function () {
         redraw(cnt);
     }, 5000);
-*/
 });
 
 /**
@@ -72,7 +81,8 @@ function buildMenuList(json) {
     }
 
     for (var i = 0; i < obj[1].length; i++) {
-        strUsers += ' / ' + obj[1][i].login;
+        strUsers += ' | ' + obj[1][i].login + '<button class="del_user" val="' +
+            obj[1][i].id + '">X</button>';
     }
 
     return [str, strUsers];
@@ -100,10 +110,16 @@ function redraw(cnt) {
             $('.del_menu').click(function () {
                 delMenu($(this).attr('val'), cnt)
             });
+
+            $('.del_user').click(function () {
+                delUser($(this).attr('val'), cnt)
+            });
+            ownGroupTrigger();
         }
     });
 
     $('#menuFormId').attr('value', cnt);
+
 }
 
 /**
@@ -122,18 +138,50 @@ function delMenu(menuId, cnt) {
         },
         success: function (html) {
             redraw(cnt);
+
         }
     });
 }
 
+/**
+ * delete user from group
+ * @param userId
+ * @param cnt
+ */
+function delUser(userId, cnt) {
+    $.ajax({
+        type: "POST",
+        url: "/menu_crud/userdel",
+        data: {"user": userId, "order": cnt},
+        dataType: 'json',
+        cache: false,
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (html) {
+            redraw(cnt);
+        }
+    });
+}
+
+
+/**
+ * owner group trigger visible/invisible
+ */
 function ownGroupTrigger() {
 
     $( "#changeOrder option:selected" ).each(function() {
         if ($( this ).attr('class') == 'changeMenuItem for') {
             $('.menuFormSubmit').css('display', 'none');
+            $('.adduser').css('display', 'none');
+            $('.del_user').css('display', 'none');
+            $('.exitgroup').css('display', 'inline');
         }
         else {
             $('.menuFormSubmit').css('display', 'inline');
+            $('.adduser').css('display', 'inline');
+            $('.del_user').css('display', 'inline');
+            $('.exitgroup').css('display', 'none');
         }
     });
 }

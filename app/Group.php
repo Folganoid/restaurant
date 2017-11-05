@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Group extends Model
 {
+
+    public $timestamps = false;
+
+    protected $fillable = [
+        'user_id', 'order_id'
+    ];
     /**
      * Relate Order model
      *

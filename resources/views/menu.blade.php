@@ -43,13 +43,16 @@
                     @endfor
                 </select>
 
-                <b> Add User</b>
-                <select id="users">
+
+                <b class="adduser"> Add User</b>
+                <select id="users" class="adduser">
                     @for( $i = 0 ; $i < count($users) ; $i++)
+                        @if(Auth::id() != $users[$i]->id)
                         <option
                                 class="chooseUser"
                                 value="{{ $users[$i]->id }}">{{ $users[$i]->login }}
                         </option>
+                        @endif
                     @endfor
                 </select>
 
@@ -63,6 +66,7 @@
                 <input id="menuFormId" name="orderId" type="hidden" value=""/>
                 <button class="menuFormSubmit" style="display: none;" type="submit"> Send the order</button>
                 {!! Form::close() !!}
+                <button class="exitgroup" type="button">Exit from group order</button>
 
             @endif
         </div>

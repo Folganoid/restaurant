@@ -138,7 +138,6 @@ class MenuController extends Controller
         return response()->json('{"status": "ok"}');
     }
 
-
     /**
      * make orders.send - true
      *
@@ -169,7 +168,26 @@ class MenuController extends Controller
      */
     public function menuUserAdd(Request $request)
     {
+        $data = $request->all();
+        $order = Order::find($data['order']);
 
+        if ($order->user_id != Auth::id()) {
+            if (Gate::denies('is-admin')) {
+                return response()->json('{"status": "false"}');
+            }
+        }
+
+        $check = Group::where('user_id', $data['user'])->where('order_id', $data['order'])->first();
+        if(!$check) {
+
+            $group = new Group;
+            $group->user_id = $data['user'];
+            $group->order_id = $data['order'];
+            $group->save();
+
+            return response()->json('{"status": "ok"}');
+
+        }
     }
 
     /**
@@ -178,7 +196,18 @@ class MenuController extends Controller
      */
     public function menuUserDel(Request $request)
     {
+        $data = $request->all();
 
+        $order = Order::find($data['order']);
+
+        if ($order->user_id != Auth::id()) {
+            if (Gate::denies('is-admin')) {
+                return response()->json('{"status": "false"}');
+            }
+        }
+
+        Group::where('user_id', $data['user'])->where('order_id', $data['order'])->delete();
+        return response()->json('{"status": "ok"}');
     }
 
 }
