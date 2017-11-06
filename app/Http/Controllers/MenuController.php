@@ -24,14 +24,14 @@ class MenuController extends Controller
     {
         $categories = Category::all();
         $menus = Menu::all();
-        $orders = $this->getOrders();
+//        $orders = $this->getOrders();
         $this->users = User::select('id', 'login')->orderBy('login')->get();
 
         return view('menu')->with([
             'categories' => $categories,
             'menus' => $menus,
-            'orders' => $orders['orders'],
-            'groupOrders' => $orders['groupOrders'],
+           // 'orders' => $orders['orders'],
+           // 'groupOrders' => $orders['groupOrders'],
             'users' => $this->users,
         ]);
     }
@@ -55,7 +55,7 @@ class MenuController extends Controller
             ->join('users', 'users.id', '=', 'orders.user_id')
             ->get();
 
-        return ['orders' => $this->orders, 'groupOrders' => $this->groupOrders];
+        return response()->json(json_encode([$this->orders, $this->groupOrders]));
     }
 
     /**
@@ -115,7 +115,7 @@ class MenuController extends Controller
         try {
             $orderMenu = OrderMenu::find($id);
         } catch (\Exception $e) {
-            return redirect('/menu')->with(['status' => 'Error, item do not exist!', 'class' => 'danger']);
+            return response()->json('{"status": "false"}');
         }
 
         try {
@@ -128,9 +128,9 @@ class MenuController extends Controller
         } catch (\Exception $e) {
         }
 
-        if (!$group AND !$owner) {
+        if (($group == FALSE) AND ($owner == FALSE)) {
             if (Gate::denies('is-admin')) {
-                return redirect('/')->with(['status' => 'Access denied!', 'class' => 'danger']);
+                return response()->json('{"status": "false"}');
             }
         }
 
@@ -208,6 +208,13 @@ class MenuController extends Controller
 
         Group::where('user_id', $data['user'])->where('order_id', $data['order'])->delete();
         return response()->json('{"status": "ok"}');
+    }
+
+    public function menuUserDelSelf($id) {
+
+        Group::where('user_id', Auth::id())->where('order_id', $id)->delete();
+        return response()->json('{"status": "ok"}');
+
     }
 
 }

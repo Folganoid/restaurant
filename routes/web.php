@@ -14,6 +14,8 @@ Route::prefix('/menu_crud')->group(function () {
     Route::post('/send', 'MenuController@menuSend')->name('send');
     Route::post('/useradd', 'MenuController@menuUserAdd');
     Route::post('/userdel', 'MenuController@menuUserDel');
+    Route::post('/userdelself/{id}', 'MenuController@menuUserDelSelf');
+
 });
 
 Route::prefix('admin')->group(function () {
@@ -23,3 +25,4 @@ Route::prefix('admin')->group(function () {
 });
 
 Route::get('/order', 'OrderController@index')->name('order')->middleware('auth');
+    Route::post('/orderlist', 'MenuController@getOrders');
