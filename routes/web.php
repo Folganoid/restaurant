@@ -26,3 +26,11 @@ Route::prefix('admin')->group(function () {
 
 Route::get('/order', 'OrderController@index')->name('order')->middleware('auth');
     Route::post('/orderlist', 'MenuController@getOrders');
+
+
+Route::prefix('/order_crud')->group(function () {
+    Route::post('/create', 'OrderController@orderCreate');
+    Route::post('/delete/{id}', 'OrderController@orderDelete');
+
+
+});

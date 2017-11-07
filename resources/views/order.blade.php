@@ -10,7 +10,7 @@
 
     @foreach($orders as $k => $order)
         <dd>{{ $order[0]->created_at }} / {{ $order[0]->updated_at }} --- {{ ($order[0]->send == 0) ? 'Not sended' : 'Sended'}}</dd>
-        <dd>
+            <dd>
             WITH:
             @if(isset($groups[$k]))
             @for( $i = 0 ; $i < count($groups[$k]) ; $i++)

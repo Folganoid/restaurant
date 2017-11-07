@@ -24,14 +24,11 @@ class MenuController extends Controller
     {
         $categories = Category::all();
         $menus = Menu::all();
-//        $orders = $this->getOrders();
         $this->users = User::select('id', 'login')->orderBy('login')->get();
 
         return view('menu')->with([
             'categories' => $categories,
             'menus' => $menus,
-           // 'orders' => $orders['orders'],
-           // 'groupOrders' => $orders['groupOrders'],
             'users' => $this->users,
         ]);
     }
@@ -48,11 +45,16 @@ class MenuController extends Controller
             $tmpGroupArr[] = $groups[$i]->order_id;
         }
 
-        $this->orders = Order::where('user_id', Auth::id())->where('send', 0)->get();
+        $this->orders = Order::where('user_id', Auth::id())->where('send', 0)->
+            select('send', 'created_at', 'id', 'user_id')
+            ->orderBy('orders.created_at', 'DESC')
+            ->get();
 
         $this->groupOrders = Order::whereIn('orders.id', $tmpGroupArr)
             ->where('orders.send', 0)
             ->join('users', 'users.id', '=', 'orders.user_id')
+            ->select('users.id', 'users.login', 'orders.send', 'orders.created_at', 'orders.id', 'orders.user_id')
+            ->orderBy('orders.created_at', 'DESC')
             ->get();
 
         return response()->json(json_encode([$this->orders, $this->groupOrders]));
@@ -96,12 +98,21 @@ class MenuController extends Controller
     {
         $data = $request->all();
 
-        $menu = new OrderMenu;
-        $menu->order_id = $data['order'];
-        $menu->menu_id = $data['menu'];
-        $menu->save();
+        $owner = Order::where('user_id', Auth::id())->where('id', $data['order'])->first();
+        $group = Group::where('order_id', $data['order'])->where('user_id', Auth::id())->first();
 
-        return response()->json('{"status": "ok"}');
+        if ($group OR $owner OR Gate::allows('is-admin')) {
+
+            $menu = new OrderMenu;
+            $menu->order_id = $data['order'];
+            $menu->menu_id = $data['menu'];
+            $menu->save();
+
+            return response()->json('{"status": "ok"}');
+        }
+        else {
+            return response()->json('{"status": "false"}');
+        }
     }
 
     /**
@@ -112,30 +123,17 @@ class MenuController extends Controller
      */
     public function menuDelete($id)
     {
-        try {
             $orderMenu = OrderMenu::find($id);
-        } catch (\Exception $e) {
+            $owner = Order::where('user_id', Auth::id())->where('id', $orderMenu->order_id)->first();
+            $group = Group::where('order_id', $orderMenu->order_id)->where('user_id', Auth::id())->first();
+
+        if ($group OR $owner OR Gate::allows('is-admin')) {
+            OrderMenu::destroy($id);
+            return response()->json('{"status": "ok"}');
+        }
+        else {
             return response()->json('{"status": "false"}');
         }
-
-        try {
-            $owner = Order::where('user_id', Auth::id())->first();
-        } catch (\Exception $e) {
-        }
-
-        try {
-            $group = Group::where('order_id', $orderMenu->order_id)->where('user_id', Auth::id())->first();
-        } catch (\Exception $e) {
-        }
-
-        if (($group == FALSE) AND ($owner == FALSE)) {
-            if (Gate::denies('is-admin')) {
-                return response()->json('{"status": "false"}');
-            }
-        }
-
-        OrderMenu::destroy($id);
-        return response()->json('{"status": "ok"}');
     }
 
     /**

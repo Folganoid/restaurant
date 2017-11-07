@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Order;
+use App\OrderMenu;
 use App\User;
 use App\Menu;
 use App\Group;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Gate;
 
 
 class OrderController extends Controller
@@ -29,7 +31,8 @@ class OrderController extends Controller
             $groupTmpArr[] = $groupId[$i]['order_id'];
         }
 
-        $foreignOrders = $this->buildOrder($groupTmpArr);
+        $foreignOrders = $this->buildOrder($groupTmpArr, 'orders.id');
+
 
         return view('order')->with([
             'orders' => $orders['orders'],
@@ -40,10 +43,10 @@ class OrderController extends Controller
 
     }
 
-    public function buildOrder(array $id)
+    public function buildOrder(array $id, string $where = 'user_id')
     {
 
-        $orders = Order::whereIn('user_id', $id)
+        $orders = Order::whereIn($where, $id)
             ->join('order_menus', 'orders.id', '=', 'order_menus.order_id')
             ->join('menus', 'menus.id', '=', 'order_menus.menu_id')
             ->join('users', 'users.id', '=', 'orders.user_id')
@@ -61,6 +64,8 @@ class OrderController extends Controller
                 'orders.created_at',
                 'orders.updated_at'
             )
+            ->orderBy('orders.send')
+            ->orderBy('orders.updated_at', 'DESC')
             ->get();
 
         $ordersArr = [];
@@ -84,6 +89,31 @@ class OrderController extends Controller
         }
 
         return ['orders' => $ordersArr, 'groups' => $groupsArr];
+
+    }
+
+    public function orderCreate() {
+
+        $order = new Order;
+        $order->user_id = Auth::id();
+        $order->send = 0;
+        $order->save();
+
+        return response()->json('{"status": "ok"}');
+    }
+
+    public function orderDelete($id)
+    {
+
+        $order = Order::find($id);
+
+        if (Gate::allows('is-admin') OR $order->user_id == Auth::id()) {
+            OrderMenu::where('order_id', $id)->delete();
+            Group::where('order_id', $id)->delete();
+            Order::destroy($id);
+        }
+
+            return response()->json('{"status": "ok"}');
 
     }
 }

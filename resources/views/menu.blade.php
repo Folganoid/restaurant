@@ -52,8 +52,15 @@
                 <input id="menuFormId" name="orderId" type="hidden" value=""/>
                 <button class="menuFormSubmit" style="display: none;" type="submit"> Send the order</button>
                 {!! Form::close() !!}
+                <button class="delorder" type="button" style="display: none;">Cancel order</button>
                 <button class="exitgroup" type="button">Exit from group order</button>
+
+
+                <br>
+
             </div>
+            <br>
+            <button class="neworder" type="button">Create new order</button>
         </div>
     </div>
 
