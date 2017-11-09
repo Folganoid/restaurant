@@ -34,7 +34,6 @@
 
             @if(Gate::allows('is-admin'))
             <a class="nav-item nav-link active" href="{{ route('admin.menu') }}">Admin menu <span class="sr-only">(current)</span></a>
-            <a class="nav-item nav-link" href="{{ route('admin.category') }}">Admin category</a>
             <a class="nav-item nav-link" href="{{ route('admin.order') }}">Admin order</a>
             @endif
 

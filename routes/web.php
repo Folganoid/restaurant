@@ -20,8 +20,10 @@ Route::prefix('/menu_crud')->group(function () {
 
 Route::prefix('admin')->group(function () {
     Route::get('menu', 'AdminController@menu')->name('admin.menu');
-    Route::get('category', 'AdminController@category')->name('admin.category');
     Route::get('order', 'AdminController@order')->name('admin.order');
+    Route::get('menu/edit/{id}', 'AdminController@menuEdit')->name('admin.menu.edit');
+    Route::get('menu/category/{id}', 'AdminController@categoryEdit')->name('admin.category.edit');
+
 });
 
 Route::get('/order', 'OrderController@index')->name('order')->middleware('auth');
