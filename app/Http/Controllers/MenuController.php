@@ -11,6 +11,7 @@ use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Gate;
+use Illuminate\Support\Facades\Storage;
 
 class MenuController extends Controller
 {
@@ -156,6 +157,32 @@ class MenuController extends Controller
 
         $order->send = TRUE;
         $order->save();
+
+        $order = Order::where('orders.id', $id)
+            ->join('order_menus', 'orders.id', '=', 'order_menus.order_id')
+            ->join('menus', 'menus.id', '=', 'order_menus.menu_id')
+            ->join('users', 'users.id', '=', 'orders.user_id')
+            ->select(
+                'users.id',
+                'users.login',
+                'menus.name',
+                'menus.price',
+                'orders.created_at'
+            )
+            ->get();
+
+        $sum = 0;
+        $menus = '';
+        for( $i = 0 ; $i < count($order) ; $i++) {
+            $sum += $order[$i]->price;
+            $menus .= $order[$i]->name . ' | ';
+        }
+
+        if (isset($order[0])) {
+           $str = $order[0]->created_at . ', by ' . $order[0]->login . ' --- ' . $menus . ' - ' . $sum;
+           $content = Storage::get('log.txt');
+           Storage::put('log.txt', $content .= $str . "\n");
+        }
 
         return redirect('/order')->with(['status' => 'Order was sending !', 'class' => 'success']);
     }
