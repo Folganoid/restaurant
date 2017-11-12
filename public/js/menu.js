@@ -56,9 +56,12 @@ $(document).ready(function () {
             },
             success: function (html) {
 
-                $('#curMenu').html(buildMenuList(html)[0]);
+                $data = buildMenuList(html);
 
-                $('#orderGroup').html(buildMenuList(html)[1]);
+                $('#curMenu').html($data[0]);
+                $('#orderGroup').html($data[1]);
+                $('.sum').html('Total: ' + $data[2].toFixed(2));
+                $('.groupCount').html('For each group member: ' + ($data[2]/$data[3]).toFixed(2));
 
                 $('.del_menu').click(function () {
                     delMenu($(this).attr('val'), cnt)
@@ -86,20 +89,24 @@ $(document).ready(function () {
         var obj = JSON.parse(json);
         var str = '';
         var strUsers = '';
+        var sum = 0;
+        var groupCount = 1;
 
         for (var i = 0; i < obj[0].length; i++) {
             str += '<li>' + obj[0][i].name +
                 ' --- ' +
                 obj[0][i].price.toFixed(2) + '<button class="del_menu" val="' +
                 obj[0][i].id + '">Delete</button></li>';
+            sum += obj[0][i].price;
         }
 
         for (var i = 0; i < obj[1].length; i++) {
             strUsers += ' | ' + obj[1][i].login + '<button class="del_user" val="' +
                 obj[1][i].id + '">X</button>';
+            groupCount++;
         }
 
-        return [str, strUsers];
+        return [str, strUsers, sum, groupCount];
     }
 
     /**

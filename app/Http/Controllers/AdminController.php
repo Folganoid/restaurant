@@ -153,4 +153,50 @@ class AdminController extends Controller
         return redirect(route('admin.menu'))->with(['status' => 'Category deleted !', 'class' => 'success']);
     }
 
+    /**
+     * add menu
+     *
+     * @param Request $request
+     */
+    public function menuAdd(Request $request) {
+
+        $request->validate(
+            [
+                'price' => [
+                    'required',
+                    'regex:/^[1-9]\d{0,7}(?:\.\d{0,2})?$/'
+                ],
+                'name' => [
+                    'required',
+                ],
+                'portion' => [
+                    'required',
+                    'regex:/^[0-9]+$/'
+                ]
+            ]
+        );
+
+        $menu = new Menu;
+        $menu->name = $request->name;
+        $menu->category_id = $request->category_id;
+        $menu->price = $request->price;
+        $menu->portion = $request->portion;
+        $menu->save();
+
+        return redirect(route('admin.menu'))->with(['status' => 'Menu was add !', 'class' => 'success']);
+    }
+
+    /**
+     * add category
+     *
+     * @param Request $request
+     */
+    public function categoryAdd(Request $request) {
+        $category = new Category;
+        $category->name = $request->category;
+        $category->save();
+
+        return redirect(route('admin.menu'))->with(['status' => 'Category was add !', 'class' => 'success']);
+    }
+
 }

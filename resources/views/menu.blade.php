@@ -46,6 +46,8 @@
                 <div>
                     <ul id="curMenu"></ul>
                 </div>
+                <div><h3 class="sum"></h3></div>
+                <div><h4 class="groupCount"></h4></div>
 
                 <br>
                 {!! Form::open(['route' => 'send', 'method' => 'post']) !!}

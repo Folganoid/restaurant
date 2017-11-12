@@ -27,6 +27,8 @@ Route::prefix('admin')->group(function () {
     Route::get('menu/delete/{id}', 'AdminController@menuDelete')->name('admin.menu.delete');
     Route::post('category/edit', 'AdminController@categoryUpdate')->name('admin.category.update');
     Route::get('category/delete/{id}', 'AdminController@categoryDelete')->name('admin.category.delete');
+    Route::post('category/add', 'AdminController@categoryAdd')->name('admin.category.add');
+    Route::post('menu/add', 'AdminController@menuAdd')->name('admin.menu.add');
 
 
 });
